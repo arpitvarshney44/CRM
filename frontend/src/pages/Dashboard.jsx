@@ -24,8 +24,8 @@ const Dashboard = () => {
   const statCards = [
     { title: 'Total Leads', value: stats.totalLeads || 0, icon: Users, color: 'bg-blue-500', change: stats.leadsGrowth || '0%' },
     { title: 'Active Clients', value: stats.activeClients || 0, icon: TrendingUp, color: 'bg-green-500', change: stats.clientsGrowth || '0%' },
-    { title: 'Revenue', value: `$${(stats.totalRevenue || 0).toLocaleString()}`, icon: DollarSign, color: 'bg-purple-500', change: stats.revenueGrowth || '0%' },
-    { title: 'Active Projects', value: stats.activeProjects || 0, icon: Calendar, color: 'bg-orange-500', change: stats.projectsGrowth || '0%' }
+    { title: 'Revenue', value: `₹${(stats.totalRevenue || 0).toLocaleString()}`, icon: DollarSign, color: 'bg-purple-500', change: stats.revenueGrowth || '0%' },
+    { title: 'Total Expenses', value: `₹${(stats.totalExpenseAmount || 0).toLocaleString()}`, icon: Calendar, color: 'bg-orange-500', change: stats.expenseGrowth || '0%' }
   ];
 
   if (loading) return <div className="flex justify-center py-8">Loading dashboard...</div>;
@@ -71,25 +71,25 @@ const Dashboard = () => {
 
       {/* Charts and Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        {/* Pipeline Overview */}
+        {/* Lead Overview */}
         <div className="lg:col-span-2 bg-white rounded-2xl p-4 md:p-6 shadow-lg border border-gray-100">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">Pipeline Overview</h3>
+          <h3 className="text-xl font-semibold text-gray-900 mb-6">Lead Overview</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-blue-50 p-4 rounded-xl">
-              <p className="text-sm text-blue-600 font-medium">Pipeline Value</p>
-              <p className="text-2xl font-bold text-blue-900">${(stats.pipelineValue || 0).toLocaleString()}</p>
+              <p className="text-sm text-blue-600 font-medium">Total Leads</p>
+              <p className="text-2xl font-bold text-blue-900">{stats.totalLeads || 0}</p>
             </div>
             <div className="bg-green-50 p-4 rounded-xl">
               <p className="text-sm text-green-600 font-medium">Qualified Leads</p>
               <p className="text-2xl font-bold text-green-900">{stats.qualifiedLeads || 0}</p>
             </div>
             <div className="bg-purple-50 p-4 rounded-xl">
-              <p className="text-sm text-purple-600 font-medium">Avg Probability</p>
-              <p className="text-2xl font-bold text-purple-900">{(stats.avgProbability || 0).toFixed(1)}%</p>
+              <p className="text-sm text-purple-600 font-medium">Converted Leads</p>
+              <p className="text-2xl font-bold text-purple-900">{stats.convertedLeads || 0}</p>
             </div>
             <div className="bg-orange-50 p-4 rounded-xl">
               <p className="text-sm text-orange-600 font-medium">Pending Payments</p>
-              <p className="text-2xl font-bold text-orange-900">${(stats.pendingPayments || 0).toLocaleString()}</p>
+              <p className="text-2xl font-bold text-orange-900">₹{(stats.pendingPayments || 0).toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -100,19 +100,19 @@ const Dashboard = () => {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Total Contracts</span>
-              <span className="text-lg font-semibold text-gray-900">${(stats.totalContracts || 0).toLocaleString()}</span>
+              <span className="text-lg font-semibold text-gray-900">₹{(stats.totalContracts || 0).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Revenue Received</span>
-              <span className="text-lg font-semibold text-green-600">${(stats.totalRevenue || 0).toLocaleString()}</span>
+              <span className="text-lg font-semibold text-green-600">₹{(stats.totalRevenue || 0).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Pending Expenses</span>
               <span className="text-lg font-semibold text-orange-600">{stats.pendingExpenses || 0}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Completed Projects</span>
-              <span className="text-lg font-semibold text-blue-600">{stats.completedProjects || 0}</span>
+              <span className="text-sm text-gray-600">Total Developers</span>
+              <span className="text-lg font-semibold text-blue-600">{stats.totalDevelopers || 0}</span>
             </div>
           </div>
         </div>

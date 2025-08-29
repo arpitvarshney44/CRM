@@ -7,7 +7,7 @@ const router = express.Router();
 // Get all leads
 router.get('/', auth, async (req, res) => {
   try {
-    const leads = await Lead.find().populate('assignedTo createdBy', 'name email');
+    const leads = await Lead.find().populate('createdBy', 'name email');
     res.json(leads);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -21,7 +21,7 @@ router.post('/', auth, async (req, res) => {
     console.log('User:', req.user);
     const lead = new Lead({ ...req.body, createdBy: req.user._id });
     await lead.save();
-    await lead.populate('assignedTo createdBy', 'name email');
+    await lead.populate('createdBy', 'name email');
     console.log('Lead created:', lead);
     res.status(201).json(lead);
   } catch (error) {
@@ -34,7 +34,7 @@ router.post('/', auth, async (req, res) => {
 router.put('/:id', auth, async (req, res) => {
   try {
     const lead = await Lead.findByIdAndUpdate(req.params.id, req.body, { new: true })
-      .populate('assignedTo createdBy', 'name email');
+      .populate('createdBy', 'name email');
     if (!lead) return res.status(404).json({ message: 'Lead not found' });
     res.json(lead);
   } catch (error) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import { expensesAPI } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -11,7 +11,7 @@ const Expenses = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
   const [formData, setFormData] = useState({
-    title: '', amount: '', category: 'office', description: '', date: ''
+    title: '', amount: '', category: 'office', description: '', date: '', status: 'pending'
   });
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const Expenses = () => {
       }
       setShowModal(false);
       setEditingExpense(null);
-      setFormData({ title: '', amount: '', category: 'office', description: '', date: '' });
+      setFormData({ title: '', amount: '', category: 'office', description: '', date: '', status: 'pending' });
       fetchExpenses();
     } catch (error) {
       toast.error('Operation failed');
@@ -55,7 +55,8 @@ const Expenses = () => {
       amount: expense.amount,
       category: expense.category,
       description: expense.description || '',
-      date: new Date(expense.date).toISOString().split('T')[0]
+      date: new Date(expense.date).toISOString().split('T')[0],
+      status: expense.status || 'pending'
     });
     setShowModal(true);
   };
@@ -72,15 +73,7 @@ const Expenses = () => {
     }
   };
 
-  const handleApproval = async (id, status) => {
-    try {
-      await expensesAPI.update(id, { status });
-      toast.success(`Expense ${status} successfully`);
-      fetchExpenses();
-    } catch (error) {
-      toast.error('Failed to update expense status');
-    }
-  };
+
 
   const statusColors = {
     pending: 'bg-yellow-100 text-yellow-800',
@@ -125,7 +118,7 @@ const Expenses = () => {
             {expenses.map((expense) => (
               <tr key={expense._id}>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{expense.title}</td>
-                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">${expense.amount}</td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹{expense.amount}</td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{expense.category}</td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {new Date(expense.date).toLocaleDateString()}
@@ -139,22 +132,6 @@ const Expenses = () => {
                   {expense.createdBy?.name}
                 </td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  {user.role === 'admin' && expense.status === 'pending' && (
-                    <>
-                      <button 
-                        onClick={() => handleApproval(expense._id, 'approved')}
-                        className="text-green-600 hover:text-green-900 mr-3"
-                      >
-                        <CheckCircle className="h-4 w-4" />
-                      </button>
-                      <button 
-                        onClick={() => handleApproval(expense._id, 'rejected')}
-                        className="text-red-600 hover:text-red-900 mr-3"
-                      >
-                        <XCircle className="h-4 w-4" />
-                      </button>
-                    </>
-                  )}
                   {(expense.createdBy?._id === user.id || user.role === 'admin') && (
                     <>
                       <button onClick={() => handleEdit(expense)} className="text-indigo-600 hover:text-indigo-900 mr-3">
@@ -180,54 +157,80 @@ const Expenses = () => {
               {editingExpense ? 'Edit Expense' : 'Add New Expense'}
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                placeholder="Title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                required
-              />
-              <input
-                type="number"
-                placeholder="Amount"
-                value={formData.amount}
-                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                required
-              />
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Title <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  placeholder="Title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Amount <span className="text-red-500">*</span></label>
+                <input
+                  type="number"
+                  placeholder="Amount"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Category <span className="text-gray-400">(Optional)</span></label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
                 <option value="travel">Travel</option>
                 <option value="office">Office</option>
                 <option value="marketing">Marketing</option>
                 <option value="software">Software</option>
                 <option value="other">Other</option>
-              </select>
-              <input
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                required
-              />
-              <textarea
-                placeholder="Description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                rows="3"
-              />
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Date <span className="text-red-500">*</span></label>
+                <input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description <span className="text-gray-400">(Optional)</span></label>
+                <textarea
+                  placeholder="Description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  rows="3"
+                />
+              </div>
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"
                   onClick={() => {
                     setShowModal(false);
                     setEditingExpense(null);
-                    setFormData({ title: '', amount: '', category: 'office', description: '', date: '' });
+                    setFormData({ title: '', amount: '', category: 'office', description: '', date: '', status: 'pending' });
                   }}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
                 >

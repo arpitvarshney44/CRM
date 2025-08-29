@@ -28,6 +28,8 @@ router.get('/dashboard', auth, async (req, res) => {
     const currentClients = clients.filter(client => new Date(client.createdAt) >= currentMonthStart);
     const currentRevenue = currentClients.reduce((sum, client) => sum + (client.paymentReceived || 0), 0);
     const currentProjects = projects.filter(proj => new Date(proj.createdAt) >= currentMonthStart);
+    const currentExpenses = expenses.filter(exp => new Date(exp.createdAt) >= currentMonthStart);
+    const currentExpenseAmount = currentExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
     // Last month data
     const lastMonthLeads = leads.filter(lead => {
@@ -43,6 +45,11 @@ router.get('/dashboard', auth, async (req, res) => {
       const date = new Date(proj.createdAt);
       return date >= lastMonthStart && date <= lastMonthEnd;
     });
+    const lastMonthExpenses = expenses.filter(exp => {
+      const date = new Date(exp.createdAt);
+      return date >= lastMonthStart && date <= lastMonthEnd;
+    });
+    const lastMonthExpenseAmount = lastMonthExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
     // Calculate growth rates
     const calculateGrowth = (current, previous) => {
@@ -53,7 +60,8 @@ router.get('/dashboard', auth, async (req, res) => {
 
     const stats = {
       totalLeads: leads.length,
-      qualifiedLeads: leads.filter(lead => ['qualified', 'proposal-sent', 'negotiation'].includes(lead.status)).length,
+      qualifiedLeads: leads.filter(lead => lead.status === 'qualified').length,
+      convertedLeads: leads.filter(lead => lead.status === 'converted').length,
       totalClients: clients.length,
       activeClients: clients.filter(client => client.status === 'active').length,
       totalRevenue: clients.reduce((sum, client) => sum + (client.paymentReceived || 0), 0),
@@ -62,15 +70,12 @@ router.get('/dashboard', auth, async (req, res) => {
       pendingExpenses: expenses.filter(exp => exp.status === 'pending').length,
       approvedExpenses: expenses.filter(exp => exp.status === 'approved').length,
       totalExpenseAmount: expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0),
-      activeProjects: projects.filter(proj => !['completed', 'cancelled'].includes(proj.status)).length,
-      completedProjects: projects.filter(proj => proj.status === 'completed').length,
-      pipelineValue: leads.reduce((sum, lead) => sum + (lead.estimatedValue || 0), 0),
-      avgProbability: leads.length > 0 ? leads.reduce((sum, lead) => sum + (lead.probability || 0), 0) / leads.length : 0,
+      totalDevelopers: projects.length,
       // Growth rates
       leadsGrowth: calculateGrowth(currentLeads.length, lastMonthLeads.length),
       clientsGrowth: calculateGrowth(currentClients.length, lastMonthClients.length),
       revenueGrowth: calculateGrowth(currentRevenue, lastMonthRevenue),
-      projectsGrowth: calculateGrowth(currentProjects.length, lastMonthProjects.length)
+      expenseGrowth: calculateGrowth(currentExpenseAmount, lastMonthExpenseAmount)
     };
 
     res.json(stats);

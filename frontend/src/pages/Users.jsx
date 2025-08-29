@@ -142,9 +142,17 @@ const Users = () => {
               <tr key={userItem._id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <div className="w-10 h-10 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
-                      {userItem.name.charAt(0)}
-                    </div>
+                    {userItem.profilePhoto ? (
+                      <img 
+                        src={`http://localhost:5000${userItem.profilePhoto}`} 
+                        alt={userItem.name}
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                        {userItem.name.charAt(0)}
+                      </div>
+                    )}
                     <div className="ml-4">
                       <div className="text-sm font-medium text-gray-900">{userItem.name}</div>
                       <div className="text-sm text-gray-500">{userItem.email}</div>

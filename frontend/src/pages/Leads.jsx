@@ -9,10 +9,7 @@ const Leads = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', company: '', jobTitle: '', source: 'other', 
-    status: 'new', priority: 'medium', estimatedValue: '', probability: '10',
-    expectedCloseDate: '', lastContactDate: '', nextFollowUp: '', industry: '',
-    leadScore: '0', notes: '', tags: ''
+    name: '', email: '', phone: '', company: '', status: 'new'
   });
 
   useEffect(() => {
@@ -33,16 +30,11 @@ const Leads = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const submitData = {
-        ...formData,
-        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
-      };
-      
       if (editingLead) {
-        await leadsAPI.update(editingLead._id, submitData);
+        await leadsAPI.update(editingLead._id, formData);
         toast.success('Lead updated successfully');
       } else {
-        await leadsAPI.create(submitData);
+        await leadsAPI.create(formData);
         toast.success('Lead created successfully');
       }
       setShowModal(false);
@@ -56,10 +48,7 @@ const Leads = () => {
 
   const resetForm = () => {
     setFormData({
-      name: '', email: '', phone: '', company: '', jobTitle: '', source: 'other', 
-      status: 'new', priority: 'medium', estimatedValue: '', probability: '10',
-      expectedCloseDate: '', lastContactDate: '', nextFollowUp: '', industry: '',
-      leadScore: '0', notes: '', tags: ''
+      name: '', email: '', phone: '', company: '', status: 'new'
     });
   };
 
@@ -70,19 +59,7 @@ const Leads = () => {
       email: lead.email,
       phone: lead.phone,
       company: lead.company || '',
-      jobTitle: lead.jobTitle || '',
-      source: lead.source,
-      status: lead.status,
-      priority: lead.priority || 'medium',
-      estimatedValue: lead.estimatedValue || '',
-      probability: lead.probability || '10',
-      expectedCloseDate: lead.expectedCloseDate ? new Date(lead.expectedCloseDate).toISOString().split('T')[0] : '',
-      lastContactDate: lead.lastContactDate ? new Date(lead.lastContactDate).toISOString().split('T')[0] : '',
-      nextFollowUp: lead.nextFollowUp ? new Date(lead.nextFollowUp).toISOString().split('T')[0] : '',
-      industry: lead.industry || '',
-      leadScore: lead.leadScore || '0',
-      notes: lead.notes || '',
-      tags: lead.tags ? lead.tags.join(', ') : ''
+      status: lead.status
     });
     setShowModal(true);
   };
@@ -118,9 +95,9 @@ const Leads = () => {
 
   // Calculate stats
   const totalLeads = leads.length;
-  const qualifiedLeads = leads.filter(lead => ['qualified', 'proposal-sent', 'negotiation'].includes(lead.status)).length;
-  const totalValue = leads.reduce((sum, lead) => sum + (lead.estimatedValue || 0), 0);
-  const avgProbability = leads.length > 0 ? leads.reduce((sum, lead) => sum + (lead.probability || 0), 0) / leads.length : 0;
+  const qualifiedLeads = leads.filter(lead => lead.status === 'qualified').length;
+  const convertedLeads = leads.filter(lead => lead.status === 'converted').length;
+  const contactedLeads = leads.filter(lead => lead.status === 'contacted').length;
 
   if (loading) return <div className="flex justify-center py-8">Loading...</div>;
 
@@ -166,8 +143,8 @@ const Leads = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Pipeline Value</dt>
-                  <dd className="text-lg font-medium text-gray-900">${totalValue.toLocaleString()}</dd>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Converted Leads</dt>
+                  <dd className="text-lg font-medium text-gray-900">{convertedLeads}</dd>
                 </dl>
               </div>
             </div>
@@ -181,8 +158,8 @@ const Leads = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Avg. Probability</dt>
-                  <dd className="text-lg font-medium text-gray-900">{avgProbability.toFixed(1)}%</dd>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Contacted Leads</dt>
+                  <dd className="text-lg font-medium text-gray-900">{contactedLeads}</dd>
                 </dl>
               </div>
             </div>
@@ -210,60 +187,25 @@ const Leads = () => {
         <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Lead Info</th>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Contact</th>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Pipeline</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Name</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Email</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Phone</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Company</th>
               <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Status</th>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Follow Up</th>
               <th className="relative px-4 md:px-6 py-3 whitespace-nowrap"><span className="sr-only">Actions</span></th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {leads.map((lead) => (
               <tr key={lead._id}>
-                <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{lead.name}</div>
-                  <div className="text-sm text-gray-500">{lead.company}</div>
-                  <div className="text-xs text-gray-400">{lead.jobTitle}</div>
-                  <div className="text-xs text-gray-400">Score: {lead.leadScore}/100</div>
-                </td>
-                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div>{lead.email}</div>
-                  <div>{lead.phone}</div>
-                  <div className="text-xs text-gray-400 capitalize">{lead.source}</div>
-                </td>
-                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div className="font-medium">${(lead.estimatedValue || 0).toLocaleString()}</div>
-                  <div className="text-green-600">{lead.probability}% probability</div>
-                  {lead.expectedCloseDate && (
-                    <div className="text-xs text-gray-400">
-                      Close: {new Date(lead.expectedCloseDate).toLocaleDateString()}
-                    </div>
-                  )}
-                </td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{lead.name}</td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{lead.email}</td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{lead.phone}</td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{lead.company || '-'}</td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[lead.status]}`}>
-                    {lead.status.replace('-', ' ')}
+                    {lead.status}
                   </span>
-                  <div className="mt-1">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${priorityColors[lead.priority]}`}>
-                      {lead.priority}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {lead.nextFollowUp ? (
-                    <div>
-                      <div className="font-medium">{new Date(lead.nextFollowUp).toLocaleDateString()}</div>
-                      {lead.lastContactDate && (
-                        <div className="text-xs text-gray-400">
-                          Last: {new Date(lead.lastContactDate).toLocaleDateString()}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="text-gray-400">Not scheduled</span>
-                  )}
                 </td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button onClick={() => handleEdit(lead)} className="text-indigo-600 hover:text-indigo-900 mr-3">
@@ -286,8 +228,9 @@ const Leads = () => {
             <h3 className="text-lg font-bold text-gray-900 mb-4">
               {editingLead ? 'Edit Lead' : 'Add New Lead'}
             </h3>
-            <form onSubmit={handleSubmit} className="space-y-4 max-h-96 overflow-y-auto">
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   placeholder="Name"
@@ -296,6 +239,9 @@ const Leads = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
                 <input
                   type="email"
                   placeholder="Email"
@@ -305,7 +251,8 @@ const Leads = () => {
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone <span className="text-red-500">*</span></label>
                 <input
                   type="tel"
                   placeholder="Phone"
@@ -314,6 +261,9 @@ const Leads = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
                 <input
                   type="text"
                   placeholder="Company"
@@ -322,54 +272,8 @@ const Leads = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="text"
-                  placeholder="Job Title"
-                  value={formData.jobTitle}
-                  onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Industry"
-                  value={formData.industry}
-                  onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="number"
-                  placeholder="Estimated Value"
-                  value={formData.estimatedValue}
-                  onChange={(e) => setFormData({ ...formData, estimatedValue: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  type="number"
-                  placeholder="Probability (%)"
-                  min="0"
-                  max="100"
-                  value={formData.probability}
-                  onChange={(e) => setFormData({ ...formData, probability: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <select
-                  value={formData.source}
-                  onChange={(e) => setFormData({ ...formData, source: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="website">Website</option>
-                  <option value="referral">Referral</option>
-                  <option value="social">Social Media</option>
-                  <option value="email">Email</option>
-                  <option value="cold-call">Cold Call</option>
-                  <option value="trade-show">Trade Show</option>
-                  <option value="other">Other</option>
-                </select>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -378,70 +282,10 @@ const Leads = () => {
                   <option value="new">New</option>
                   <option value="contacted">Contacted</option>
                   <option value="qualified">Qualified</option>
-                  <option value="proposal-sent">Proposal Sent</option>
-                  <option value="negotiation">Negotiation</option>
                   <option value="converted">Converted</option>
                   <option value="lost">Lost</option>
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <select
-                  value={formData.priority}
-                  onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="low">Low Priority</option>
-                  <option value="medium">Medium Priority</option>
-                  <option value="high">High Priority</option>
-                  <option value="urgent">Urgent</option>
-                </select>
-                <input
-                  type="number"
-                  placeholder="Lead Score (0-100)"
-                  min="0"
-                  max="100"
-                  value={formData.leadScore}
-                  onChange={(e) => setFormData({ ...formData, leadScore: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                <input
-                  type="date"
-                  placeholder="Expected Close Date"
-                  value={formData.expectedCloseDate}
-                  onChange={(e) => setFormData({ ...formData, expectedCloseDate: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  type="date"
-                  placeholder="Last Contact Date"
-                  value={formData.lastContactDate}
-                  onChange={(e) => setFormData({ ...formData, lastContactDate: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  type="date"
-                  placeholder="Next Follow Up"
-                  value={formData.nextFollowUp}
-                  onChange={(e) => setFormData({ ...formData, nextFollowUp: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <input
-                type="text"
-                placeholder="Tags (comma separated)"
-                value={formData.tags}
-                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <textarea
-                placeholder="Notes"
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                rows="3"
-              />
               <div className="flex justify-end space-x-3 pt-4">
                 <button
                   type="button"

@@ -9,10 +9,7 @@ const Clients = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', company: '', address: '', status: 'active', 
-    contractValue: '', paymentReceived: '', paymentPending: '', lastPaymentDate: '',
-    nextPaymentDue: '', paymentTerms: 'net-30', industry: '', website: '', 
-    taxId: '', billingAddress: '', priority: 'medium', notes: ''
+    name: '', email: '', phone: '', company: '', contractValue: '', paymentReceived: '', paymentPending: '', status: 'active'
   });
 
   useEffect(() => {
@@ -51,10 +48,7 @@ const Clients = () => {
 
   const resetForm = () => {
     setFormData({
-      name: '', email: '', phone: '', company: '', address: '', status: 'active', 
-      contractValue: '', paymentReceived: '', paymentPending: '', lastPaymentDate: '',
-      nextPaymentDue: '', paymentTerms: 'net-30', industry: '', website: '', 
-      taxId: '', billingAddress: '', priority: 'medium', notes: ''
+      name: '', email: '', phone: '', company: '', contractValue: '', paymentReceived: '', paymentPending: '', status: 'active'
     });
   };
 
@@ -65,20 +59,10 @@ const Clients = () => {
       email: client.email,
       phone: client.phone,
       company: client.company,
-      address: client.address || '',
-      status: client.status,
       contractValue: client.contractValue || '',
       paymentReceived: client.paymentReceived || '',
       paymentPending: client.paymentPending || '',
-      lastPaymentDate: client.lastPaymentDate ? new Date(client.lastPaymentDate).toISOString().split('T')[0] : '',
-      nextPaymentDue: client.nextPaymentDue ? new Date(client.nextPaymentDue).toISOString().split('T')[0] : '',
-      paymentTerms: client.paymentTerms || 'net-30',
-      industry: client.industry || '',
-      website: client.website || '',
-      taxId: client.taxId || '',
-      billingAddress: client.billingAddress || '',
-      priority: client.priority || 'medium',
-      notes: client.notes || ''
+      status: client.status
     });
     setShowModal(true);
   };
@@ -120,7 +104,7 @@ const Clients = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
-                  <dd className="text-lg font-medium text-gray-900">${totalRevenue.toLocaleString()}</dd>
+                  <dd className="text-lg font-medium text-gray-900">₹{totalRevenue.toLocaleString()}</dd>
                 </dl>
               </div>
             </div>
@@ -135,7 +119,7 @@ const Clients = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Pending Payments</dt>
-                  <dd className="text-lg font-medium text-gray-900">${totalPending.toLocaleString()}</dd>
+                  <dd className="text-lg font-medium text-gray-900">₹{totalPending.toLocaleString()}</dd>
                 </dl>
               </div>
             </div>
@@ -150,7 +134,7 @@ const Clients = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Total Contracts</dt>
-                  <dd className="text-lg font-medium text-gray-900">${totalContract.toLocaleString()}</dd>
+                  <dd className="text-lg font-medium text-gray-900">₹{totalContract.toLocaleString()}</dd>
                 </dl>
               </div>
             </div>
@@ -193,47 +177,31 @@ const Clients = () => {
         <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Client</th>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Contact</th>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Financial</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Name</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Email</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Phone</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Company</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Payments</th>
               <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Status</th>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Next Payment</th>
               <th className="relative px-4 md:px-6 py-3 whitespace-nowrap"><span className="sr-only">Actions</span></th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {clients.map((client) => (
               <tr key={client._id}>
-                <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{client.name}</div>
-                  <div className="text-sm text-gray-500">{client.company}</div>
-                  <div className="text-xs text-gray-400">{client.industry}</div>
-                </td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{client.name}</td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{client.email}</td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{client.phone}</td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{client.company}</td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div>{client.email}</div>
-                  <div>{client.phone}</div>
-                  {client.website && <div className="text-xs text-blue-500">{client.website}</div>}
-                </td>
-                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div className="text-green-600 font-medium">Received: ${(client.paymentReceived || 0).toLocaleString()}</div>
-                  <div className="text-yellow-600">Pending: ${(client.paymentPending || 0).toLocaleString()}</div>
-                  <div className="text-gray-600">Total: ${(client.contractValue || 0).toLocaleString()}</div>
+                  <div className="text-green-600">Received: ₹{(client.paymentReceived || 0).toLocaleString()}</div>
+                  <div className="text-yellow-600">Pending: ₹{(client.paymentPending || 0).toLocaleString()}</div>
+                  <div className="text-gray-600">Contract: ₹{(client.contractValue || 0).toLocaleString()}</div>
                 </td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[client.status]}`}>
                     {client.status}
                   </span>
-                  <div className="text-xs text-gray-500 mt-1 capitalize">{client.priority} priority</div>
-                </td>
-                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {client.nextPaymentDue ? (
-                    <div>
-                      <div>{new Date(client.nextPaymentDue).toLocaleDateString()}</div>
-                      <div className="text-xs text-gray-400">{client.paymentTerms}</div>
-                    </div>
-                  ) : (
-                    <span className="text-gray-400">Not set</span>
-                  )}
                 </td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button onClick={() => handleEdit(client)} className="text-indigo-600 hover:text-indigo-900 mr-3">
@@ -256,8 +224,9 @@ const Clients = () => {
             <h3 className="text-lg font-bold text-gray-900 mb-4">
               {editingClient ? 'Edit Client' : 'Add New Client'}
             </h3>
-            <form onSubmit={handleSubmit} className="space-y-4 max-h-96 overflow-y-auto">
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   placeholder="Name"
@@ -266,6 +235,9 @@ const Clients = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
                 <input
                   type="email"
                   placeholder="Email"
@@ -275,7 +247,8 @@ const Clients = () => {
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone <span className="text-red-500">*</span></label>
                 <input
                   type="tel"
                   placeholder="Phone"
@@ -284,6 +257,9 @@ const Clients = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Company <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   placeholder="Company"
@@ -293,7 +269,8 @@ const Clients = () => {
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Contract Value</label>
                 <input
                   type="number"
                   placeholder="Contract Value"
@@ -301,15 +278,9 @@ const Clients = () => {
                   onChange={(e) => setFormData({ ...formData, contractValue: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
-                <input
-                  type="text"
-                  placeholder="Industry"
-                  value={formData.industry}
-                  onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Received</label>
                 <input
                   type="number"
                   placeholder="Payment Received"
@@ -317,6 +288,9 @@ const Clients = () => {
                   onChange={(e) => setFormData({ ...formData, paymentReceived: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Pending</label>
                 <input
                   type="number"
                   placeholder="Payment Pending"
@@ -325,39 +299,8 @@ const Clients = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="url"
-                  placeholder="Website"
-                  value={formData.website}
-                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Tax ID"
-                  value={formData.taxId}
-                  onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="date"
-                  placeholder="Last Payment Date"
-                  value={formData.lastPaymentDate}
-                  onChange={(e) => setFormData({ ...formData, lastPaymentDate: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  type="date"
-                  placeholder="Next Payment Due"
-                  value={formData.nextPaymentDue}
-                  onChange={(e) => setFormData({ ...formData, nextPaymentDue: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -365,49 +308,8 @@ const Clients = () => {
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
-                  <option value="pending">Pending</option>
-                </select>
-                <select
-                  value={formData.paymentTerms}
-                  onChange={(e) => setFormData({ ...formData, paymentTerms: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="immediate">Immediate</option>
-                  <option value="net-15">Net 15</option>
-                  <option value="net-30">Net 30</option>
-                  <option value="net-60">Net 60</option>
-                </select>
-                <select
-                  value={formData.priority}
-                  onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="low">Low Priority</option>
-                  <option value="medium">Medium Priority</option>
-                  <option value="high">High Priority</option>
                 </select>
               </div>
-              <input
-                type="text"
-                placeholder="Address"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <textarea
-                placeholder="Billing Address"
-                value={formData.billingAddress}
-                onChange={(e) => setFormData({ ...formData, billingAddress: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                rows="2"
-              />
-              <textarea
-                placeholder="Notes"
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                rows="3"
-              />
               <div className="flex justify-end space-x-3 pt-4">
                 <button
                   type="button"

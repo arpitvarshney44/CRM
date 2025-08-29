@@ -10,11 +10,7 @@ const Development = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingDeveloper, setEditingDeveloper] = useState(null);
   const [formData, setFormData] = useState({
-    developerName: '', email: '', phone: '', projectName: '', client: '',
-    totalAmount: '', paidAmount: '', hourlyRate: '', hoursWorked: '',
-    startDate: '', endDate: '', paymentMethod: 'bank-transfer',
-    lastPaymentDate: '', nextPaymentDue: '', notes: '',
-    bankDetails: { accountNumber: '', bankName: '', ifscCode: '' }
+    developerName: '', email: '', projectName: '', totalAmount: '', paidAmount: '', paymentStatus: 'pending'
   });
 
   useEffect(() => {
@@ -63,11 +59,7 @@ const Development = () => {
 
   const resetForm = () => {
     setFormData({
-      developerName: '', email: '', phone: '', projectName: '', client: '',
-      totalAmount: '', paidAmount: '', hourlyRate: '', hoursWorked: '',
-      startDate: '', endDate: '', paymentMethod: 'bank-transfer',
-      lastPaymentDate: '', nextPaymentDue: '', notes: '',
-      bankDetails: { accountNumber: '', bankName: '', ifscCode: '' }
+      developerName: '', email: '', projectName: '', totalAmount: '', paidAmount: '', paymentStatus: 'pending'
     });
   };
 
@@ -76,20 +68,10 @@ const Development = () => {
     setFormData({
       developerName: developer.developerName,
       email: developer.email,
-      phone: developer.phone || '',
       projectName: developer.projectName,
-      client: developer.client._id,
       totalAmount: developer.totalAmount || '',
       paidAmount: developer.paidAmount || '',
-      hourlyRate: developer.hourlyRate || '',
-      hoursWorked: developer.hoursWorked || '',
-      startDate: developer.startDate ? new Date(developer.startDate).toISOString().split('T')[0] : '',
-      endDate: developer.endDate ? new Date(developer.endDate).toISOString().split('T')[0] : '',
-      paymentMethod: developer.paymentMethod || 'bank-transfer',
-      lastPaymentDate: developer.lastPaymentDate ? new Date(developer.lastPaymentDate).toISOString().split('T')[0] : '',
-      nextPaymentDue: developer.nextPaymentDue ? new Date(developer.nextPaymentDue).toISOString().split('T')[0] : '',
-      notes: developer.notes || '',
-      bankDetails: developer.bankDetails || { accountNumber: '', bankName: '', ifscCode: '' }
+      paymentStatus: developer.paymentStatus || 'pending'
     });
     setShowModal(true);
   };
@@ -105,6 +87,8 @@ const Development = () => {
       }
     }
   };
+
+
 
   const paymentStatusColors = {
     pending: 'bg-red-100 text-red-800',
@@ -147,7 +131,7 @@ const Development = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Total Amount</dt>
-                  <dd className="text-lg font-medium text-gray-900">${totalAmount.toLocaleString()}</dd>
+                  <dd className="text-lg font-medium text-gray-900">₹{totalAmount.toLocaleString()}</dd>
                 </dl>
               </div>
             </div>
@@ -162,7 +146,7 @@ const Development = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Amount Paid</dt>
-                  <dd className="text-lg font-medium text-green-600">${totalPaid.toLocaleString()}</dd>
+                  <dd className="text-lg font-medium text-green-600">₹{totalPaid.toLocaleString()}</dd>
                 </dl>
               </div>
             </div>
@@ -177,7 +161,7 @@ const Development = () => {
               <div className="ml-5 w-0 flex-1">
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Pending Amount</dt>
-                  <dd className="text-lg font-medium text-red-600">${totalPending.toLocaleString()}</dd>
+                  <dd className="text-lg font-medium text-red-600">₹{totalPending.toLocaleString()}</dd>
                 </dl>
               </div>
             </div>
@@ -205,53 +189,29 @@ const Development = () => {
         <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Developer</th>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Project</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Developer Name</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Email</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Project Name</th>
               <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Payment Details</th>
               <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Status</th>
-              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Next Payment</th>
               <th className="relative px-4 md:px-6 py-3 whitespace-nowrap"><span className="sr-only">Actions</span></th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {developers.map((developer) => (
               <tr key={developer._id}>
-                <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{developer.developerName}</div>
-                  <div className="text-sm text-gray-500">{developer.email}</div>
-                  <div className="text-xs text-gray-400">{developer.phone}</div>
-                </td>
-                <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{developer.projectName}</div>
-                  <div className="text-sm text-gray-500">{developer.client?.company}</div>
-                  {developer.hourlyRate && (
-                    <div className="text-xs text-gray-400">${developer.hourlyRate}/hr • {developer.hoursWorked}h</div>
-                  )}
-                </td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{developer.developerName}</td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{developer.email}</td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{developer.projectName}</td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <div className="font-medium text-gray-900">Total: ${(developer.totalAmount || 0).toLocaleString()}</div>
-                  <div className="text-green-600">Paid: ${(developer.paidAmount || 0).toLocaleString()}</div>
-                  <div className="text-red-600">Pending: ${(developer.pendingAmount || 0).toLocaleString()}</div>
+                  <div className="font-medium text-gray-900">Total: ₹{(developer.totalAmount || 0).toLocaleString()}</div>
+                  <div className="text-green-600">Paid: ₹{(developer.paidAmount || 0).toLocaleString()}</div>
+                  <div className="text-red-600">Pending: ₹{(developer.pendingAmount || 0).toLocaleString()}</div>
                 </td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${paymentStatusColors[developer.paymentStatus]}`}>
                     {developer.paymentStatus}
                   </span>
-                  <div className="text-xs text-gray-500 mt-1 capitalize">{developer.paymentMethod}</div>
-                </td>
-                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {developer.nextPaymentDue ? (
-                    <div>
-                      <div className="font-medium">{new Date(developer.nextPaymentDue).toLocaleDateString()}</div>
-                      {developer.lastPaymentDate && (
-                        <div className="text-xs text-gray-400">
-                          Last: {new Date(developer.lastPaymentDate).toLocaleDateString()}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="text-gray-400">Not scheduled</span>
-                  )}
                 </td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button onClick={() => handleEdit(developer)} className="text-indigo-600 hover:text-indigo-900 mr-3">
@@ -274,8 +234,9 @@ const Development = () => {
             <h3 className="text-lg font-bold text-gray-900 mb-4">
               {editingDeveloper ? 'Edit Developer Record' : 'Add New Developer'}
             </h3>
-            <form onSubmit={handleSubmit} className="space-y-4 max-h-96 overflow-y-auto">
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Developer Name <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   placeholder="Developer Name"
@@ -284,6 +245,9 @@ const Development = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
                 <input
                   type="email"
                   placeholder="Email"
@@ -293,14 +257,8 @@ const Development = () => {
                   required
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="tel"
-                  placeholder="Phone"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Project Name <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   placeholder="Project Name"
@@ -310,28 +268,18 @@ const Development = () => {
                   required
                 />
               </div>
-              <select
-                value={formData.client}
-                onChange={(e) => setFormData({ ...formData, client: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                required
-              >
-                <option value="">Select Client</option>
-                {clients.map((client) => (
-                  <option key={client._id} value={client._id}>
-                    {client.company} - {client.name}
-                  </option>
-                ))}
-              </select>
-              <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount</label>
                 <input
                   type="number"
                   placeholder="Total Amount"
                   value={formData.totalAmount}
                   onChange={(e) => setFormData({ ...formData, totalAmount: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  required
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Paid Amount</label>
                 <input
                   type="number"
                   placeholder="Paid Amount"
@@ -340,104 +288,18 @@ const Development = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="number"
-                  placeholder="Hourly Rate"
-                  value={formData.hourlyRate}
-                  onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Status</label>
+                <select
+                  value={formData.paymentStatus}
+                  onChange={(e) => setFormData({ ...formData, paymentStatus: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  type="number"
-                  placeholder="Hours Worked"
-                  value={formData.hoursWorked}
-                  onChange={(e) => setFormData({ ...formData, hoursWorked: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
+                >
+                  <option value="pending">Pending</option>
+                  <option value="partial">Partial</option>
+                  <option value="completed">Completed</option>
+                </select>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="date"
-                  placeholder="Start Date"
-                  value={formData.startDate}
-                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  required
-                />
-                <input
-                  type="date"
-                  placeholder="End Date"
-                  value={formData.endDate}
-                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="date"
-                  placeholder="Last Payment Date"
-                  value={formData.lastPaymentDate}
-                  onChange={(e) => setFormData({ ...formData, lastPaymentDate: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  type="date"
-                  placeholder="Next Payment Due"
-                  value={formData.nextPaymentDue}
-                  onChange={(e) => setFormData({ ...formData, nextPaymentDue: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <select
-                value={formData.paymentMethod}
-                onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="bank-transfer">Bank Transfer</option>
-                <option value="paypal">PayPal</option>
-                <option value="cash">Cash</option>
-                <option value="check">Check</option>
-              </select>
-              <div className="grid grid-cols-3 gap-3">
-                <input
-                  type="text"
-                  placeholder="Account Number"
-                  value={formData.bankDetails.accountNumber}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
-                    bankDetails: { ...formData.bankDetails, accountNumber: e.target.value }
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Bank Name"
-                  value={formData.bankDetails.bankName}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
-                    bankDetails: { ...formData.bankDetails, bankName: e.target.value }
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <input
-                  type="text"
-                  placeholder="IFSC Code"
-                  value={formData.bankDetails.ifscCode}
-                  onChange={(e) => setFormData({ 
-                    ...formData, 
-                    bankDetails: { ...formData.bankDetails, ifscCode: e.target.value }
-                  })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <textarea
-                placeholder="Notes"
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                rows="3"
-              />
               <div className="flex justify-end space-x-3 pt-4">
                 <button
                   type="button"
