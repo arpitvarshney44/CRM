@@ -67,7 +67,7 @@ const Analytics = () => {
       {/* Financial Overview */}
       <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Financial Overview</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
           <div className="text-center">
             <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-3">
               <DollarSign className="h-6 w-6 text-green-600" />
@@ -89,10 +89,10 @@ const Analytics = () => {
             </div>
             <p className="text-sm font-medium text-gray-600">Net Profit</p>
             <p className="text-2xl font-bold text-blue-600">
-              ₹{((dashboardStats.totalRevenue || 0) - (dashboardStats.totalExpenseAmount || 0)).toLocaleString()}
+              ₹{((dashboardStats.totalRevenue || 0) - (dashboardStats.totalExpenseAmount || 0) - (dashboardStats.totalDevelopmentAmount || 0)).toLocaleString()}
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              {dashboardStats.totalRevenue > 0 ? (((dashboardStats.totalRevenue - dashboardStats.totalExpenseAmount) / dashboardStats.totalRevenue) * 100).toFixed(1) : 0}% margin
+              {dashboardStats.totalRevenue > 0 ? (((dashboardStats.totalRevenue - dashboardStats.totalExpenseAmount - (dashboardStats.totalDevelopmentAmount || 0)) / dashboardStats.totalRevenue) * 100).toFixed(1) : 0}% margin
             </p>
           </div>
           <div className="text-center">
@@ -101,6 +101,13 @@ const Analytics = () => {
             </div>
             <p className="text-sm font-medium text-gray-600">Pending Payments</p>
             <p className="text-2xl font-bold text-yellow-600">₹{(dashboardStats.pendingPayments || 0).toLocaleString()}</p>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mx-auto mb-3">
+              <CreditCard className="h-6 w-6 text-purple-600" />
+            </div>
+            <p className="text-sm font-medium text-gray-600">Developer Payments</p>
+            <p className="text-2xl font-bold text-purple-600">₹{(dashboardStats.totalDevelopmentAmount || 0).toLocaleString()}</p>
           </div>
         </div>
       </div>
@@ -283,7 +290,7 @@ const Analytics = () => {
               <div className="space-y-6">
                 <div className="text-center">
                   <p className="text-3xl font-bold text-green-600">
-                    {dashboardStats.totalRevenue > 0 ? (((dashboardStats.totalRevenue - dashboardStats.totalExpenseAmount) / dashboardStats.totalRevenue) * 100).toFixed(1) : 0}%
+                    {dashboardStats.totalRevenue > 0 ? (((dashboardStats.totalRevenue - dashboardStats.totalExpenseAmount - (dashboardStats.totalDevelopmentAmount || 0)) / dashboardStats.totalRevenue) * 100).toFixed(1) : 0}%
                   </p>
                   <p className="text-sm text-gray-600">Profit Margin</p>
                 </div>
@@ -296,9 +303,13 @@ const Analytics = () => {
                     <span className="text-sm font-medium text-red-700">Total Expenses</span>
                     <span className="text-sm font-bold text-red-700">-₹{(dashboardStats.totalExpenseAmount || 0).toLocaleString()}</span>
                   </div>
+                  <div className="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+                    <span className="text-sm font-medium text-orange-700">Development Costs</span>
+                    <span className="text-sm font-bold text-orange-700">-₹{(dashboardStats.totalDevelopmentAmount || 0).toLocaleString()}</span>
+                  </div>
                   <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg border-t-2 border-blue-200">
                     <span className="text-sm font-bold text-blue-700">Net Profit</span>
-                    <span className="text-sm font-bold text-blue-700">₹{((dashboardStats.totalRevenue || 0) - (dashboardStats.totalExpenseAmount || 0)).toLocaleString()}</span>
+                    <span className="text-sm font-bold text-blue-700">₹{((dashboardStats.totalRevenue || 0) - (dashboardStats.totalExpenseAmount || 0) - (dashboardStats.totalDevelopmentAmount || 0)).toLocaleString()}</span>
                   </div>
                 </div>
               </div>

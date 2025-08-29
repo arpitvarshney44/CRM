@@ -31,6 +31,11 @@ const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileDropdown, setProfileDropdown] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    const saved = localStorage.getItem('sidebarWidth');
+    return saved ? parseInt(saved) : 288;
+  });
+  const [isResizing, setIsResizing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [badgeCounts, setBadgeCounts] = useState({ leads: 0, expenses: 0, messages: 0 });
   const [notifications] = useState([
@@ -241,7 +246,7 @@ const Layout = ({ children }) => {
       </div>
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-72 lg:flex-col">
+      <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:flex-col" style={{ width: `${sidebarWidth}px` }}>
         <div className="flex min-h-0 flex-1 flex-col bg-white/80 backdrop-blur-xl border-r border-gray-200/50 shadow-xl">
           <div className="flex flex-1 flex-col overflow-y-auto pt-6 pb-4">
             {/* Logo */}
@@ -335,8 +340,46 @@ const Layout = ({ children }) => {
         </div>
       </div>
 
+      {/* Resize Handle */}
+      <div 
+        className="hidden lg:block fixed top-0 bg-gray-300 hover:bg-gray-400 cursor-col-resize z-50 transition-colors"
+        style={{ 
+          left: `${sidebarWidth}px`, 
+          width: '4px', 
+          height: '100vh'
+        }}
+        onMouseDown={(e) => {
+          setIsResizing(true);
+          const startX = e.clientX;
+          const startWidth = sidebarWidth;
+          
+          const handleMouseMove = (e) => {
+            const newWidth = startWidth + (e.clientX - startX);
+            let finalWidth;
+            if (newWidth < 150) {
+              finalWidth = 64; // Collapsed state
+            } else if (newWidth > 450) {
+              finalWidth = 450; // Max expanded state
+            } else {
+              finalWidth = Math.max(250, newWidth); // Normal range
+            }
+            setSidebarWidth(finalWidth);
+            localStorage.setItem('sidebarWidth', finalWidth.toString());
+          };
+          
+          const handleMouseUp = () => {
+            setIsResizing(false);
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+          };
+          
+          document.addEventListener('mousemove', handleMouseMove);
+          document.addEventListener('mouseup', handleMouseUp);
+        }}
+      />
+
       {/* Main content */}
-      <div className="lg:pl-72 flex flex-col flex-1">
+      <div className="lg:flex lg:flex-col lg:flex-1 flex flex-col flex-1" style={{ marginLeft: window.innerWidth >= 1024 ? `${sidebarWidth}px` : '0' }}>
         {/* Mobile header */}
         <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 p-3 lg:hidden">
           <button

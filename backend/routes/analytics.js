@@ -71,6 +71,7 @@ router.get('/dashboard', auth, async (req, res) => {
       approvedExpenses: expenses.filter(exp => exp.status === 'approved').length,
       totalExpenseAmount: expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0),
       totalDevelopers: projects.length,
+      totalDevelopmentAmount: projects.reduce((sum, proj) => sum + (proj.paidAmount || 0), 0),
       // Growth rates
       leadsGrowth: calculateGrowth(currentLeads.length, lastMonthLeads.length),
       clientsGrowth: calculateGrowth(currentClients.length, lastMonthClients.length),

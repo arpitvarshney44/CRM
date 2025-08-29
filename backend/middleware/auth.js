@@ -10,6 +10,20 @@ const auth = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Handle hardcoded admin
+    if (decoded.id === 'hardcoded-admin') {
+      req.user = {
+        _id: 'hardcoded-admin',
+        id: 'hardcoded-admin',
+        name: 'Super Admin',
+        email: 'admin@sirswa.com',
+        role: 'admin',
+        isActive: true
+      };
+      return next();
+    }
+    
     const user = await User.findById(decoded.id).select('-password');
     
     if (!user || !user.isActive) {

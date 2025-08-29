@@ -30,9 +30,12 @@ router.post('/', auth, async (req, res) => {
 // Update development project
 router.put('/:id', auth, async (req, res) => {
   try {
-    const project = await Development.findByIdAndUpdate(req.params.id, req.body, { new: true })
-      .populate('createdBy', 'name email');
+    const project = await Development.findById(req.params.id);
     if (!project) return res.status(404).json({ message: 'Project not found' });
+    
+    Object.assign(project, req.body);
+    await project.save();
+    await project.populate('createdBy', 'name email');
     res.json(project);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

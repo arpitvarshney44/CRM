@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const developmentSchema = new mongoose.Schema({
   developerName: { type: String, required: true },
-  email: { type: String, required: true },
+  email: { type: String },
   projectName: { type: String, required: true },
   totalAmount: { type: Number, default: 0 },
   paidAmount: { type: Number, default: 0 },

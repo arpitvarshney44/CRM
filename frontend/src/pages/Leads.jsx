@@ -9,7 +9,7 @@ const Leads = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', company: '', status: 'new'
+    name: '', email: '', phone: '', company: '', status: 'new', leadDate: '', followUpDate: ''
   });
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const Leads = () => {
 
   const resetForm = () => {
     setFormData({
-      name: '', email: '', phone: '', company: '', status: 'new'
+      name: '', email: '', phone: '', company: '', status: 'new', leadDate: '', followUpDate: ''
     });
   };
 
@@ -56,10 +56,12 @@ const Leads = () => {
     setEditingLead(lead);
     setFormData({
       name: lead.name,
-      email: lead.email,
+      email: lead.email || '',
       phone: lead.phone,
       company: lead.company || '',
-      status: lead.status
+      status: lead.status,
+      leadDate: lead.leadDate ? new Date(lead.leadDate).toISOString().split('T')[0] : '',
+      followUpDate: lead.followUpDate ? new Date(lead.followUpDate).toISOString().split('T')[0] : ''
     });
     setShowModal(true);
   };
@@ -191,6 +193,8 @@ const Leads = () => {
               <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Email</th>
               <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Phone</th>
               <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Company</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Lead Date</th>
+              <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Follow Up</th>
               <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Status</th>
               <th className="relative px-4 md:px-6 py-3 whitespace-nowrap"><span className="sr-only">Actions</span></th>
             </tr>
@@ -202,6 +206,12 @@ const Leads = () => {
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{lead.email}</td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{lead.phone}</td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{lead.company || '-'}</td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {lead.leadDate ? new Date(lead.leadDate).toLocaleDateString() : '-'}
+                </td>
+                <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {lead.followUpDate ? new Date(lead.followUpDate).toLocaleDateString() : '-'}
+                </td>
                 <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[lead.status]}`}>
                     {lead.status}
@@ -241,14 +251,13 @@ const Leads = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input
                   type="email"
                   placeholder="Email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  required
                 />
               </div>
               <div>
@@ -269,6 +278,24 @@ const Leads = () => {
                   placeholder="Company"
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Lead Date</label>
+                <input
+                  type="date"
+                  value={formData.leadDate}
+                  onChange={(e) => setFormData({ ...formData, leadDate: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Follow Up Date</label>
+                <input
+                  type="date"
+                  value={formData.followUpDate}
+                  onChange={(e) => setFormData({ ...formData, followUpDate: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
